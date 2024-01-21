@@ -1,7 +1,2 @@
 streamlit
-easyocr
-ultralytics
-shutil
-os
-fastapi
-starlette
+
