@@ -26,7 +26,7 @@ def model_pred(file_path,filename):
     model = YOLO('best.pt')
 # Initialize EasyOCR reader
     reader = easyocr.Reader(['en'])
-    st.write(file_path)
+    # st.write(file_path)
     results = model.predict(file_path, save=True, save_crop=True, show_boxes=True)
     spliting=filename.split(".")
     for r in results:
