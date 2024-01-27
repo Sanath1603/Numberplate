@@ -28,9 +28,12 @@ def model_pred(file_path,filename):
     reader = easyocr.Reader(['en'])
     st.write(file_path)
     results = model.predict(file_path, save=True, save_crop=True, show_boxes=True)
-    st.write(results.path)
+    for r in results:
+        save_path=r.save_dir
+        st.write(r.save_dir)
     
     # Run OCR on the uploaded image using EasyOCR
+    save_path+="/crops/licence"
     spliting=filename.split(".")
     print(spliting)
     crop_path=os.path.join(detect, spliting[0]+".jpg")
