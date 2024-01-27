@@ -34,7 +34,7 @@ def model_pred(file_path,filename):
         # st.write(r.save_dir)
     
     # Run OCR on the uploaded image using EasyOCR
-    col1,col2=st.Columns([2,2])
+    col1,col2=st.columns(2)
     with col1:
         # st.write(os.path.join(save_path, spliting[0]+".jpg"))
         image = Image.open(os.path.join(save_path, spliting[0]+".png"))
