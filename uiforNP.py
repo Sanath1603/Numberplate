@@ -30,16 +30,17 @@ def model_pred(file_path,filename):
     results = model.predict(file_path, save=True, save_crop=True, show_boxes=True)
     for r in results:
         save_path=r.save_dir
-        st.write(r.save_dir)
+        # st.write(r.save_dir)
     
     # Run OCR on the uploaded image using EasyOCR
+    st.image(os.path.join(save_path, spliting[0]+".jpg"))
     save_path+="/crops/licence"
     spliting=filename.split(".")
     print(spliting)
     crop_path=os.path.join(detect, spliting[0]+".jpg")
     save_path=os.path.join(save_path, spliting[0]+".jpg")
-    st.write(save_path)
-    st.write(crop_path)
+    # st.write(save_path)
+    # st.write(crop_path)
     result = reader.readtext(save_path)
     text = result[0][1]
     return text
@@ -58,7 +59,7 @@ if uploaded_file:
     with open(file_path, "wb") as image_file:
         image_file.write(uploaded_file.read())
 
-    st.write(uploaded_file)
+    # st.write(uploaded_file)
     # Display the uploaded image
     st.image(uploaded_file)
 
