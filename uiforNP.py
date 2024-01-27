@@ -15,9 +15,13 @@ import easyocr
 from ultralytics import YOLO
 import shutil
 import os
-
-def model_pred(file_path):
-    shutil.rmtree('./run/detect/', ignore_errors=True)
+import cv2
+from PIL import Image 
+UPLOAD_DIR = "uploaded_images"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+shutil.rmtree('run', ignore_errors=True)
+def model_pred(file_path,filename):
+    
     detect="./runs/detect/predict/crops/licence"
     model = YOLO('best.pt')
 # Initialize EasyOCR reader
@@ -25,7 +29,7 @@ def model_pred(file_path):
     results = model.predict(file_path, save=True, save_crop=True, show_boxes=True)
     
     # Run OCR on the uploaded image using EasyOCR
-    spliting=file_path.filename.split(".")
+    spliting=filename.split(".")
     print(spliting)
     crop_path=os.path.join(detect, spliting[0]+".jpg")
     result = reader.readtext(crop_path)
@@ -37,7 +41,16 @@ st.title("Please upload image")
 
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg","png"])
 
+
 if uploaded_file:
+    file_path = os.path.join(UPLOAD_DIR, uploaded_file.name)
+    image_bytes = uploaded_file.getvalue()
+    file={"file": (uploaded_file.name, image_bytes, "image/jpeg")}
+    
+    with open(file_path, "wb") as image_file:
+        image_file.write(uploaded_file.read())
+
+    st.write(uploaded_file)
     # Display the uploaded image
     st.image(uploaded_file)
 
@@ -46,7 +59,7 @@ if uploaded_file:
 
     # Prepare the payload
     files = {"file": (uploaded_file.name, image_bytes, "image/jpeg")}
-    result=model_pred(uploaded_file)
+    result=model_pred(file_path,uploaded_file.name)
     st.subheader(f'{result}')
 
     # Send the image to FastAPI
