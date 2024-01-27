@@ -79,7 +79,7 @@ if uploaded_file:
     # Prepare the payload
     files = {"file": (uploaded_file.name, image_bytes, "image/jpeg")}
     result=model_pred(file_path,uploaded_file.name)
-    st.subheader(f'{result}')
+    st.subheader(f'Vehicle Number plate :  :blue[{result}]')
 
     # Send the image to FastAPI
     # response = requests.post("http://localhost:8000/uploadfile", files=files)
