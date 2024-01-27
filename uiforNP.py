@@ -11,6 +11,26 @@
 #     st.write("Welcome")
 import streamlit as st
 import requests
+import easyocr
+from ultralytics import YOLO
+import shutil
+import os
+
+def model_pred(file_path):
+    shutil.rmtree('./run/detect/', ignore_errors=True)
+    detect="./runs/detect/predict/crops/licence"
+    model = YOLO('best.pt')
+# Initialize EasyOCR reader
+    reader = easyocr.Reader(['en'])
+    results = model.predict(file_path, save=True, save_crop=True, show_boxes=True)
+    
+    # Run OCR on the uploaded image using EasyOCR
+    spliting=file_path.filename.split(".")
+    print(spliting)
+    crop_path=os.path.join(detect, spliting[0]+".jpg")
+    result = reader.readtext(crop_path)
+    text = result[0][1]
+    return text
 
 # Streamlit UI
 st.title("Please upload image")
@@ -26,13 +46,15 @@ if uploaded_file:
 
     # Prepare the payload
     files = {"file": (uploaded_file.name, image_bytes, "image/jpeg")}
+    result=model_pred(uploaded_file)
+    st.subheader(f'{result}')
 
     # Send the image to FastAPI
-    response = requests.post("http://localhost:8000/uploadfile", files=files)
-    st.toast(f"Image uploaded successfully")
-    if response.status_code == 200:
-        result = response.json()
+    # response = requests.post("http://localhost:8000/uploadfile", files=files)
+    # st.toast(f"Image uploaded successfully")
+    # if response.status_code == 200:
+    #     result = response.json()
         
-        st.subheader(f'{result["number_plate"]}')
-    else:
-        st.error("Failed to upload image. Please try again.")
+    #     st.subheader(f'{result["number_plate"]}')
+    # else:
+    #     st.error("Failed to upload image. Please try again.")
