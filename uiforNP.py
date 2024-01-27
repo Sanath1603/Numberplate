@@ -37,6 +37,8 @@ def model_pred(file_path,filename):
     spliting=filename.split(".")
     print(spliting)
     crop_path=os.path.join(detect, spliting[0]+".jpg")
+    save_path=os.path.join(save_path, spliting[0]+".jpg")
+    st.write(save_path)
     st.write(crop_path)
     result = reader.readtext(save_path)
     text = result[0][1]
