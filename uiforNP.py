@@ -19,15 +19,16 @@ import cv2
 from PIL import Image 
 UPLOAD_DIR = "uploaded_images"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-# shutil.rmtree('run/detect', ignore_errors=True)
+shutil.rmtree('./run/detect')
 def model_pred(file_path,filename):
     
-    detect="runs/detect/predict/crops/licence"
+    detect="./runs/detect/predict/crops/licence"
     model = YOLO('best.pt')
 # Initialize EasyOCR reader
     reader = easyocr.Reader(['en'])
     st.write(file_path)
     results = model.predict(file_path, save=True, save_crop=True, show_boxes=True)
+    st.write(results.path)
     
     # Run OCR on the uploaded image using EasyOCR
     spliting=filename.split(".")
