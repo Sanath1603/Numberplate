@@ -19,7 +19,7 @@ import cv2
 from PIL import Image 
 UPLOAD_DIR = "uploaded_images"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-shutil.rmtree('run', ignore_errors=True)
+shutil.rmtree('./run', ignore_errors=True)
 def model_pred(file_path,filename):
     
     detect="./runs/detect/predict/crops/licence"
