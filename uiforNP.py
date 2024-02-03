@@ -28,9 +28,9 @@ def preprocess_image(image_path):
 
 def remove_special_characters(input_string):
     # Check if special characters are present
-    if any(not char.isalpha() for char in input_string):
+    if any(not char.isalnum() for char in input_string):
         # Remove special characters and keep only alphabets
-        cleaned_string = ''.join(char for char in input_string if char.isalpha())
+        cleaned_string = ''.join(char for char in input_string if char.isalnum())
         return cleaned_string
     else:
         # No special characters found, return the original string
