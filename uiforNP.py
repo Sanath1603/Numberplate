@@ -20,40 +20,52 @@ from PIL import Image
 UPLOAD_DIR = "uploaded_images"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 shutil.rmtree('run/detect',ignore_errors=True)
+
+def preprocess_image(image_path):
+    image = cv2.imread(image_path)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    return gray
+
 def model_pred(file_path,filename):
-    
-    detect="./runs/detect/predict/crops/licence"
-    model = YOLO('best.pt')
-# Initialize EasyOCR reader
-    reader = easyocr.Reader(['en'])
-    # st.write(file_path)
-    results = model.predict(file_path, save=True, save_crop=True, show_boxes=True)
-    spliting=filename.split(".")
-    for r in results:
-        save_path=r.save_dir
+    try:
+        detect="./runs/detect/predict/crops/licence"
+        model = YOLO('best.pt')
+    # Initialize EasyOCR reader
+        reader = easyocr.Reader(['en'])
+        # st.write(file_path)
+        results = model.predict(file_path, save=True, save_crop=True, show_boxes=True)
+        spliting=filename.split(".")
+        for r in results:
+            save_path=r.save_dir
         # st.write(r.save_dir)
     
     # Run OCR on the uploaded image using EasyOCR
-    col1,col2=st.columns(2)
-    with col1:
-        # st.write(os.path.join(save_path, spliting[0]+".jpg"))
-        image = Image.open(os.path.join(save_path, spliting[0]+".png"))
+        col1,col2=st.columns(2)
+        with col1:
+            # st.write(os.path.join(save_path, spliting[0]+".jpg"))
+            image = Image.open(os.path.join(save_path, spliting[0]+".png"))
 
-        st.image(image,use_column_width=True,caption='Predicted Image')
-    save_path+="/crops/licence"
-    with col2:
-        image = Image.open(os.path.join(save_path, spliting[0]+".jpg"))
+            st.image(image,use_column_width=True,caption='Predicted Image')
+        save_path+="/crops/licence"
+        with col2:
+            image = Image.open(os.path.join(save_path, spliting[0]+".jpg"))
 
-        st.image(image,use_column_width=True,caption='Croped image')
+            st.image(image,use_column_width=True,caption='Croped image')
     
-    print(spliting)
-    crop_path=os.path.join(detect, spliting[0]+".jpg")
-    save_path=os.path.join(save_path, spliting[0]+".jpg")
-    # st.write(save_path)
-    # st.write(crop_path)
-    result = reader.readtext(save_path)
-    text = result[0][1]
-    return text
+        
+        print(spliting)
+    
+        crop_path=os.path.join(detect, spliting[0]+".jpg")
+        save_path=os.path.join(save_path, spliting[0]+".jpg")
+        # st.write(save_path)
+        # st.write(crop_path)
+        preprocessed=preprocess_image(save_path)
+        result = reader.readtext(preprocessed)
+        text = result[0][1]
+        return text
+    except Exception as e:
+        print("eee")
+        return e
 
 # Streamlit UI
 st.title("Please upload image")
@@ -62,24 +74,28 @@ uploaded_file = st.file_uploader("Choose an image...", type=["jpg","png"])
 
 
 if uploaded_file:
-    file_path = os.path.join(UPLOAD_DIR, uploaded_file.name)
-    image_bytes = uploaded_file.getvalue()
-    file={"file": (uploaded_file.name, image_bytes, "image/jpeg")}
+    try:
+        file_path = os.path.join(UPLOAD_DIR, uploaded_file.name)
+        image_bytes = uploaded_file.getvalue()
+        file={"file": (uploaded_file.name, image_bytes, "image/jpeg")}
+        
+        with open(file_path, "wb") as image_file:
+            image_file.write(uploaded_file.read())
+
+        # st.write(uploaded_file)
+        # Display the uploaded image
+        st.image(uploaded_file)
+
+        # Convert the image to bytes
+        image_bytes = uploaded_file.getvalue()
+
+        # Prepare the payload
+        files = {"file": (uploaded_file.name, image_bytes, "image/jpeg")}
+        result=model_pred(file_path,uploaded_file.name)
+        st.subheader(f'Vehicle Number plate :  :blue[{result}]')
+    except Exception as e:
+        st.error(e)
     
-    with open(file_path, "wb") as image_file:
-        image_file.write(uploaded_file.read())
-
-    # st.write(uploaded_file)
-    # Display the uploaded image
-    st.image(uploaded_file)
-
-    # Convert the image to bytes
-    image_bytes = uploaded_file.getvalue()
-
-    # Prepare the payload
-    files = {"file": (uploaded_file.name, image_bytes, "image/jpeg")}
-    result=model_pred(file_path,uploaded_file.name)
-    st.subheader(f'Vehicle Number plate :  :blue[{result}]')
 
     # Send the image to FastAPI
     # response = requests.post("http://localhost:8000/uploadfile", files=files)
