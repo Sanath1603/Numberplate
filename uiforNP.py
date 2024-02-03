@@ -26,6 +26,16 @@ def preprocess_image(image_path):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     return gray
 
+def remove_special_characters(input_string):
+    # Check if special characters are present
+    if any(not char.isalpha() for char in input_string):
+        # Remove special characters and keep only alphabets
+        cleaned_string = ''.join(char for char in input_string if char.isalpha())
+        return cleaned_string
+    else:
+        # No special characters found, return the original string
+        return input_string
+    
 def model_pred(file_path,filename):
     try:
         detect="./runs/detect/predict/crops/licence"
@@ -62,7 +72,8 @@ def model_pred(file_path,filename):
         preprocessed=preprocess_image(save_path)
         result = reader.readtext(preprocessed)
         text = result[0][1]
-        return text
+        text=remove_special_characters(text)
+        return text.upper()
     except Exception as e:
         print("eee")
         return e
