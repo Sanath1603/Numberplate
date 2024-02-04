@@ -53,7 +53,7 @@ def model_pred(file_path,filename):
         col1,col2=st.columns(2)
         with col1:
             # st.write(os.path.join(save_path, spliting[0]+".jpg"))
-            image = Image.open(os.path.join(save_path, spliting[0]+".png"))
+            image = Image.open(os.path.join(save_path, filename))
 
             st.image(image,use_column_width=True,caption='Predicted Image')
         save_path+="/crops/licence"
