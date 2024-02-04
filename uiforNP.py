@@ -19,8 +19,8 @@ import cv2
 from PIL import Image 
 UPLOAD_DIR = "uploaded_images"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-shutil.rmtree('run/detect',ignore_errors=True)
 
+shutil.rmtree('./runs/',ignore_errors=True)
 def preprocess_image(image_path):
     image = cv2.imread(image_path)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -79,7 +79,7 @@ def model_pred(file_path,filename):
         return e
 
 # Streamlit UI
-st.title("Please upload image")
+st.title("Please upload image for Number Plate Detection")
 
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg","png"])
 
