@@ -52,10 +52,16 @@ def model_pred(file_path,filename):
     # Run OCR on the uploaded image using EasyOCR
         col1,col2=st.columns(2)
         with col1:
+            if os.path.exists(save_path):
+        # Iterate through files in the folder
+                for filename1 in os.listdir(save_path):
+                    # Check if the file is an image (you can add more extensions as needed)
+                    if filename1.lower().endswith(('.jpg', '.jpeg', '.png', '.gif')):
+                        
             # st.write(os.path.join(save_path, spliting[0]+".jpg"))
-            image = Image.open(os.path.join(save_path, filename))
+                        image = Image.open(os.path.join(save_path, filename1))
 
-            st.image(image,use_column_width=True,caption='Predicted Image')
+                        st.image(image,use_column_width=True,caption='Predicted Image')
         save_path+="/crops/licence"
         with col2:
             image = Image.open(os.path.join(save_path, spliting[0]+".jpg"))
@@ -75,8 +81,8 @@ def model_pred(file_path,filename):
         text=remove_special_characters(text)
         return text.upper()
     except Exception as e:
-        print("eee")
-        return e
+        print("eee",e)
+        return 0
 
 # Streamlit UI
 st.title("Please upload image for Number Plate Detection")
@@ -95,7 +101,7 @@ if uploaded_file:
 
         # st.write(uploaded_file)
         # Display the uploaded image
-        st.image(uploaded_file)
+        st.image(uploaded_file,caption='Image uploaded')
 
         # Convert the image to bytes
         image_bytes = uploaded_file.getvalue()
@@ -103,7 +109,10 @@ if uploaded_file:
         # Prepare the payload
         files = {"file": (uploaded_file.name, image_bytes, "image/jpeg")}
         result=model_pred(file_path,uploaded_file.name)
-        st.subheader(f'Vehicle Number plate :  :blue[{result}]')
+        if result ==0:
+            st.subheader(f'Sorry Unable to detect the NUmber plate')
+        else:
+            st.subheader(f'Vehicle Number plate :  :blue[{result}]')
     except Exception as e:
         st.error(e)
     
